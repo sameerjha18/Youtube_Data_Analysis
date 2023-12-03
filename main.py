@@ -36,6 +36,23 @@ def channeldetails(connection):
         data.append(details)
     return data
         
+def videoData(connection,id):
+    request = connection.videos().list(
+        part="statistics",
+        id=id
+    )
+    response = request.execute()
+    
+    items = response.get('items')
+
+    for x in items:
+        statistics = x.get('statistics')
+        details = {
+            'viewCount': statistics.get('viewCount'),
+            'likeCount': statistics.get('likeCount'),
+            'commentCount': statistics.get('commentCount'),
+        }
+    return details
 
 if __name__ == '__main__':
     configure()
@@ -44,4 +61,14 @@ if __name__ == '__main__':
         dict_writer = csv.DictWriter(file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(channeldetails(apiConnection()))
+    
+    video_ids = [ sub['videoId'] for sub in channeldetails(apiConnection())]
+    data = []
+    for id in video_ids:
+        data.append(videoData(apiConnection(), id))
+    keys = data[0].keys()
+    with open('videoData.csv', 'w', encoding='utf-8', newline="") as file:
+        dict_writer = csv.DictWriter(file, keys)
+        dict_writer.writeheader()
+        dict_writer.writerows(data)
     
