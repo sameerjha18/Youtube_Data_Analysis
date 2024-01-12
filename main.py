@@ -48,6 +48,7 @@ def videoData(connection,id):
     for x in items:
         statistics = x.get('statistics')
         details = {
+            'videoId': id,
             'viewCount': statistics.get('viewCount'),
             'likeCount': statistics.get('likeCount'),
             'commentCount': statistics.get('commentCount'),
